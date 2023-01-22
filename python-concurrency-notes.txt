@@ -1,0 +1,477 @@
+Flynn's Taxonomy
+
+# Data Streams
+- Multiple, Single
+
+# Instruction Streams
+- Multiple, Single
+
+1. SISD Architecture - sequential computer and a single processing unit
+
+- only one element is processed at a time.
+
+2. SIMD Architecture - parallel computer with multiple processing units.
+
+- two processors are both executing the same instructions in sync.
+
+- well-suited for applications that perform the same handful of operations on a massive set of data elements, like Image Processing.
+
+3. MISD - opposite of SIMD.
+
+- each processing unit independently executes its OWN separate series of instructions.
+
+- the difference here is that all of these units operate on the SAME SINGLE STREAM OF DATA.
+
+- while SIMD processes multiple data on similar operations, MISD process one data on multiple processing units.
+
+- Abstracting away, SIMD is like chopping two vegetables at the same time, while MISD is peeling a vegetable and chopping the same at the same time -- note that it is the same vegetable! Can one peel and chop it at the same time?
+
+4. MIMD - the fix to what MISD lacks of.
+
+- every processing unit can be executing a different series of instructions and each of those processors can also operate on different set of data.
+
+- CPU 1 can chop the onion, CPU 2 can peel the carrot.
+
+- MIMD is the most used architecture in Flynn's Taxonomy.
+
+...
+---
+...
+
+Parallel Programming Model
+
+1. SPMD (Single Program, Multiple Data) - multiple processing units are executing a copy of the SAME SINGLE program simultaneously, but they can use different set of data, much like the SIMD.
+
+- abstracting it, it's much like two persons following the same recipe cookbook.
+
+2. MPMD (Multiple Program, Multiple Data) - processors can be executing different independent programs at the same time, while also operating on different computer.
+
+- abstracting it, it's much like each of the person follows their own recipe.
+
+- usually has a host.
+
+
+...
+---
+...
+
+2 Memory Architectures on Parallel Architecture
+
+1. Shared Memory - all processors have the same access to the same memory, where all processors have access to the changes on that memory.
+
+2. Distributed Memory - each processors has its own local memory. All processors are connected to a network.
+
+Changes are only local to the processor who handles that memory space. NO global memory space!
+
+Computers like supercomputers use this memory architecture.
+
+
+...
+---
+...
+
+THREADS VS PROCESS
+
+Process - contains code, data, and state info.
+
+- has independent instance of a running program.
+
+- separate address space
+
+A computer can have many processes.
+
+Threads - tiny processes; independent path of execution
+
+- only exists as part of a process
+
+- OS schedule threads for execution
+
+- Cooking example: 2 persons cooking in the kitchen as two threads executing as part of the same process. 
+
+If the process is making a salad, then one person (one thread) might be retrieving the vegetables and fruits while the other thread will chop them.
+
+...
+---
+...
+
+Note: Threads that live inside the same process has shared access to its code, data, and resources.
+
+Note 2: Sharing resources between separate processes is NOT as easy as sharing between threads in the same process.
+
+Note 3: Processes are independent of one another, threads can live inside their own process!
+
+One process may be making a salad, and another process may be baking a cake.
+
+So how can these two processes share resources and data?
+
+Answer: Inter-process Communication (IPC)
+
+ever heard of sockets and pipes?
+
+Now, which is better, using multiple threads or using multiple processes? IT DEPENDS!
+
+Remember that threads are much more lightweight and faster to use than processes when it comes to resource.
+
+...
+---
+...
+
+Concurrency is not to be confused with Parallel!
+
+Concurrency is mostly on the structure of a program/code, whether it is able to be broken into parts that can run independently of each other.
+
+It is mostly on HOW a PROGRAM is structured.
+
+An example of this is two persons (as threads) sharing one knife (processor) when chopping. They could switch turns through time until they are done. It is concurrent, but it is not parallel.
+
+The two independent processes overlap in time, which means that it is concurrent, but it is NOT PARALLEL for the simple reason that the two processes cannot be happening simultaneously.
+
+To make it parallel, they need another processor (knife)!
+
+Parallel hardware examples:
+1. Multi-core processors
+2. Graphics processing unit
+3. Computer cluster
+
+...
+---
+...
+
+TLDR; Concurrency vs Parallelism
+
+Concurrency:
+> Program structure
+> Dealing with multiple things at once
+
+Parallelism:
+> Simultaneous Execution
+> Doing multiple things at once
+
+A concurrent program may not be inherently parallel.
+
+...
+---
+...
+
+Concurrent programming is useful to things like GUI (Graphical user interfaces) -- an I/O dependent task.
+
+Parallel programming is useful for computationally-intensive tasks, such as matrix multiplication. How do you think computers calculate the product of two 3x3 matrix?
+
+...
+---
+...
+
+PYTHON CONCURRENCY
+- There can be concurrent python threads,
+
+- but there is no parallel python threads, due to GIL (global interpreter lock), a mechanism that limits python to only execute one thread at a time!
+
+Under the hood, a python program is read by an interpreter.
+
+Examples of Python interpreter: CPython
+- uses GIL for thread-safe operation.
+
+Other interpreters that don't have GIL: Jython, IronPython, PyPy-STM
+
+...
+---
+...
+
+In I/O bound applications like GUIs, GIL won't be a problem.
+
+However, in CPU bound applications, like computer intensive tasks, GIL can negatively impact performance.
+
+A fix here can be using parallel algorithms (C/C++) together with Python or use python multiprocessing package, instead of multithread.
+
+...
+---
+...
+
+USING THE threading MODULE
+
+import threading
+
+...
+
+Checking the task manager, see performance tab to see threads and processes.
+
+To see more of processes, go to resource monitor and navigate to "CPU". You'll see the list of processes running and its avg. usage.
+
+...
+---
+...
+
+Context Switch
+- the OS stores the state of a process/thread that was running so it can be resumed later (e.g., I/O events)
+
+- Loading the saved state for the new process or thread to run.
+
+
+Scheduling Algorithms:
+1. First come, first served
+2. Shortest job next
+3. Priority
+4. Shortest remaining time
+5. Round-robin
+6. Multiple-level queues
+
+...
+---
+...
+
+Scheduling is not fair and not consistent from time to time.
+
+In most operating systems, the operating system determines when each of the threads and processes gets scheduled to execute.
+
+thread.join() method - waits until another thread completes its execution. When you call join on a thread, the thread will enter a blocked state, waiting until the other thread that you joined with is done.
+
+Terminology on Life Cycle of a Thread:
+1. New
+2. Runnable
+3. Blocked
+4. Terminated
+
+...
+---
+...
+
+creating python threads with classes (inheritance):
+
+class MyThreadClass(threading.Thread):
+    def run(self):
+	# do something
+
+MyThreadClass()
+
+This way, you can create a thread without running it right away!
+
+
+...
+---
+...
+
+Daemon Thread
+
+Garbage Collection/Collector
+- form of automatic memory management
+- runs in the background
+- reclaims memory no longer used by the program.
+- Python has its own garbage collector!
+- has its own separate thread!
+- but it runs forever, the fix here is the daemon thread
+
+...
+
+Daemon (Background) Thread
+- does not prevent the process from terminating
+- by default, threads are created as non-daemon
+
+
+If you make threads like garbage collector a daemon, make sure it does not create a negative effects if it prematurely exits! E.g., what if you were doing an I/O task, like writing to an SD Card? It may corrupt it!
+
+
+A daemon thread will be abruptly terminated when the main thread finishes. If that occurs during a write operation, the file could be corrupted.
+
+...
+
+To make a non-daemon thread daemon, do ff:
+
+thread_name.daemon = True
+
+...
+---
+...
+
+MUTUAL EXCLUSION
+
+Data race - common problem that occurs when two or more concurrent threads access te same memory location; at least one thread is MODIFYING it.
+
+...
+
+Read-Modify-Write
+
+- what happens if two threads modify the same data? this is race condition!
+
+...
+---
+...
+
+Detecting Data races are hard to do!
+
+The best defense is the best offense: prevent it in the first place!
+
+- pay attention whenever two or more threads access the SAME RESOURCE!
+
+
+Criticla section
+- code segment that accesses a shared resource.
+- should not be executed by more than one thread at a time.
+- the three steps are: read-modify-write; these are critical section!
+
+Mutex (Lock)
+- short for mutual exclusion
+- mechanism to implement mutual exclusion
+- only one thread or process can possess at a time
+- limits access to critical section (which, in this case, is the Read-modify-write)
+
+...
+---
+...
+
+Atomic Operations
+- execute as a single action, relative to other threads
+- can't be interrupted by other threads
+- either you have the mutex or you don't
+
+Acquiring a Lock
+- if lock is already taken, block/wait for it to be available!
+
+Tip: Keep protected sections of code as short as possible!
+
+...
+---
+...
+
+Mutex in Python: Using the .aquire() and .release() methods in threads.
+
+Take note of the Tip!
+
+...
+
+Deadlock state
+- all processes and threads are unable to continue executing, due to one thread stuck on having the lock and not being able to release it.
+
+Reentrant Mutex/Recursive Lock
+- type of mutex
+- can be locked multiple times by the same thread
+- must be unlocked as many times as it was locked
+
+...
+---
+...
+
+
+Try Lock
+- what if the thread is more useful doing something else other than waiting for the lock to be released?
+
+- non-blocking lock/aquire method for mutex
+- if mutex is available, lock it and return True
+- otherwise, return False!
+
+A good example of this is using a single bathroom/comfort room on your friend's party. What if it is occupied? Do you just wait infront of the door?
+
+
+...
+---
+...
+
+Read-write Lock
+- what if most threads only want to read? do you lock it for the single thread to write on?
+
+1. Shared read - multiple threads at once
+2. Exclusive write - only one thread at a time
+
+This lock is useful for protecting shared resource like a calendar! The writing thread waits for the read, and  reading thread waits for the writing thread.
+
+...
+---
+...
+
+It's better to use Read-write lock when threads for reading > threads for writing.
+
+Implementing this in python is using the package readerwriterlock
+
+`$ pip install readerwriterlock`
+
+...
+---
+...
+
+DEADLOCK - dive eep
+
+Dining Philosopher's Problem
+- example of synchronization problem.
+- demonstrated by Barron Stone and Olivia Stone
+
+Deadlock
+- each thread is waiting another thread to take action
+
+Liveness
+- propertiesthat requrie a system to make progress
+- members may have to "take turns" in critical sections
+
+Example:
+
+Bank Accounts A to E
+
+- to transfer money from one account to another, a thread needs to take each of the account's lock (from sender to receiver).
+
+
+...
+---
+...
+
+Deadlock in Python
+
+See deadlock.py for demonstration
+
+Deadlock does not use any CPU cycles, because it is stuck waiting for other threads!
+
+Lock Ordering - technique to reduce deadlocks
+- Ensure locks are always taken in the same order by any thread.
+
+Lock Timeout - a timeout on lock attempts
+- if a thread cannot acquire all the locks within the time limit: backup and free all locks taken!
+- wait for a random amount of time and try it again!
+
+
+...
+---
+...
+
+Thread Death (Another deadlock type)
+resulting in Abandoned Lock
+
+what happens if a thread holding that lock crashes? the other threads are stuck waiting forever!
+
+e.g. putting a 1/0 error in a thread.
+
+fix: try-catch-finally block or with statement (context manager)
+
+Context manager - facilitate the proper handling of resources. 
+...
+---
+...
+
+Starvation
+- happens when a process or thread is PERPETUALLY denied the resources it needs (maybe because the other thread is too fast to acquire locks!)
+
+
+...
+---
+...
+
+
+Livelock
+- tricky situation, similar to a deadlock, but this time, multiple threads or processes are actively responding to each other to resolve conflict, but that prevents them from making progress!
+
+Example:
+
+I'm hungry but I care about the other thread, so the food's theirs. However, the thread also cares about me even though they are hungry. What now?
+
+Livelock happens when threads are designed to respond to each other.
+
+In a more technical sense, to avoid deadlock, what if a thread is designed to give up the lock he got first because the other one, apparently, has the second lock? 
+
+Now they are stuck releasing and acquiring each of the locks. Maybe because it's livelock since it's not really stuck as in a deadlock, but actively executing without making useful progress.
+
+
+DIFFERENCE BETWEEN A LIVELOCK AND A DEADLOCK: Resource.
+
+Using resource monitor, you can determine that a program is in a DEADLOCK if it does not use any computer resources (CPU).
+
+You can determine that the program is in  LIVELOCK if it uses CPU resources!
+
+...
+
+END PARALLEL AND CONCURRENT PROGRAMMING IN PYTHON p1
